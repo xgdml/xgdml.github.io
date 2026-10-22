@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# 编辑器 / 本地环境
+.workbuddy/
+.vscode/
+.idea/
+
+# 原始大图（网页只用 images/opt/ 里的压缩版）
+images/*.jpg
+images/*.png
+
+# 旧版备份与旧模板
+index-旧版备份.html
+/assets/
+
+# 本地验证产物
+_*.html
+_*.png
