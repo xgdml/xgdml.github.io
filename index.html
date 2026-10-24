@@ -583,6 +583,7 @@
     .grain{ display:none; }
   }
 </style>
+<noscript><style>.reveal,.wipe{opacity:1!important;transform:none!important;clip-path:none!important}</style></noscript>
 </head>
 
 <body id="top">
@@ -937,32 +938,42 @@
     }
   }
 
-  /* ---------- 滚动入场 ---------- */
-  function initReveal() {
-    var items = document.querySelectorAll('.reveal');
-    if (!('IntersectionObserver' in window)) {
-      for (var i = 0; i < items.length; i++) items[i].classList.add('in');
-      return;
-    }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry, idx) {
-        if (!entry.isIntersecting) return;
-        var el = entry.target;
-        setTimeout(function () { el.classList.add('in'); }, Math.min(idx * 80, 320));
-        io.unobserve(el);
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
-    for (var j = 0; j < items.length; j++) io.observe(items[j]);
-  }
-  setTimeout(initReveal, introDelay);
+  /* ---------- 滚动入场（不依赖 IntersectionObserver，带定时兜底） ---------- */
+  window.__revealReady = 1;
+  var revealItems = [].slice.call(document.querySelectorAll('.reveal'));
 
-  // 兜底：观察器失效时不至于白屏
-  setTimeout(function () {
-    if (document.querySelectorAll('.reveal.in').length === 0) {
-      var all = document.querySelectorAll('.reveal');
-      for (var n = 0; n < all.length; n++) all[n].classList.add('in');
+  function revealCheck() {
+    if (!revealItems.length) return;
+    var vh = window.innerHeight || document.documentElement.clientHeight || 800;
+    for (var i = revealItems.length - 1; i >= 0; i--) {
+      var el = revealItems[i];
+      var r = el.getBoundingClientRect();
+      if (r.top < vh * 0.92 && r.bottom > -60) {
+        el.classList.add('in');
+        revealItems.splice(i, 1);
+      }
     }
-  }, introDelay + 1200);
+  }
+
+  var revealTick = false;
+  function onRevealScroll() {
+    if (revealTick) return;
+    revealTick = true;
+    requestAnimationFrame(function () { revealTick = false; revealCheck(); });
+  }
+
+  function startReveal() {
+    revealCheck();
+    window.addEventListener('scroll', onRevealScroll, { passive: true });
+    window.addEventListener('resize', onRevealScroll, { passive: true });
+    window.addEventListener('orientationchange', onRevealScroll, { passive: true });
+    // 兜底：滚动事件万一不触发（内层滚动容器、旧内核等），定时巡检也能保证内容出现
+    var t = setInterval(function () {
+      revealCheck();
+      if (!revealItems.length) clearInterval(t);
+    }, 1000);
+  }
+  setTimeout(startReveal, introDelay);
 
   /* ---------- 字幕离屏暂停，省合成开销 ---------- */
   var ticker = document.getElementById('ticker');
@@ -1103,6 +1114,14 @@
     Array.prototype.forEach.call(counters, function (c) { cio.observe(c); });
   }
 })();
+</script>
+<script>
+/* 独立兜底：主脚本若在旧内核 / 插件拦截下报错，3 秒后强制显示全部内容 */
+setTimeout(function () {
+  if (window.__revealReady) return;
+  var n = document.querySelectorAll('.reveal');
+  for (var i = 0; i < n.length; i++) n[i].classList.add('in');
+}, 3000);
 </script>
 </body>
 </html>
