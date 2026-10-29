@@ -1,0 +1,78 @@
+/* ============ DepthText：3D 挤出文字 ============ */
+.depth-text{
+  display:inline-block;
+  font-size:var(--depth-text-font-size,7rem);
+  perspective:var(--depth-text-perspective,900px);
+  perspective-origin:50% 48%;
+  isolation:isolate;
+  vertical-align:top;
+}
+
+.depth-text__stage{
+  position:relative;
+  display:inline-grid;
+  place-items:center;
+  transform-style:preserve-3d;
+  transform-origin:50% 50%;
+  will-change:transform;
+}
+
+.depth-text__layer,
+.depth-text__face{
+  grid-area:1/1;
+  display:inline-block;
+  font-size:var(--depth-text-font-size,7rem);
+  font-weight:var(--depth-text-font-weight,900);
+  line-height:.86;
+  letter-spacing:var(--depth-text-track,.86em);
+  white-space:nowrap;
+  user-select:none;
+  -webkit-user-select:none;
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
+  font-kerning:normal;
+  text-rendering:geometricPrecision;
+  font-family:var(--depth-text-font-family,inherit);
+}
+
+.depth-text__layer{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+
+.depth-text__layer--back{text-shadow:var(--depth-text-shadow,none)}
+
+.depth-text--outline .depth-text__layer{
+  -webkit-text-fill-color:transparent;
+  -webkit-text-stroke:max(1px,.012em) currentColor;
+}
+
+.depth-text__face{
+  position:relative;
+  z-index:1;
+  color:var(--depth-text-face-color,currentColor);
+  text-shadow:var(--depth-text-face-shadow,none);
+  transform:translateZ(.6px);
+}
+
+/* 老浏览器不支持 color-mix 时，隐藏挤出层，退化成清晰的平面大字 */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+  .depth-text__layer { display: none; }
+  .depth-text__face { text-shadow: 0 0.02em 0.06em rgba(0, 0, 0, .25); }
+}
+
+/* 屏幕阅读器可读的真实文字 */
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+
+@media (hover:hover) and (pointer:fine){
+  .depth-text{cursor:default}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .depth-text__stage{will-change:auto}
+}
