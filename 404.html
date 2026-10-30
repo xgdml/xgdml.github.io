@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>404 · 这一帧不存在 ｜ 杨召</title>
+<meta name="robots" content="noindex" />
+<meta name="theme-color" content="#F5F1E8" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230A0A0C'/%3E%3Ctext x='32' y='45' font-family='Helvetica,Arial' font-size='34' font-weight='bold' fill='%23E9B23C' text-anchor='middle'%3EY%3C/text%3E%3C/svg%3E" />
+<style>
+  :root{
+    --ink:#0A0A0C; --paper:#F5F1E8; --cream:#FFFDF8;
+    --gold:#C8901F; --gold-bright:#E9B23C; --deep:#6B6559;
+    --pad:clamp(22px,5vw,72px);
+    --font-display:"Anton","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --font-sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--font-sans);
+    display:grid; place-items:center; padding:var(--pad);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{width:min(720px,100%)}
+  .num{
+    font-family:var(--font-display); font-size:clamp(5rem,22vw,12rem); line-height:.82;
+    letter-spacing:-.03em; color:var(--ink); margin:0;
+  }
+  .num span{color:var(--gold-bright)}
+  .rule{width:56px;height:3px;background:var(--gold);margin:clamp(20px,3vw,30px) 0}
+  h1{
+    font-size:clamp(1.25rem,3.2vw,1.9rem); font-weight:900; letter-spacing:-.01em;
+    margin:0 0 12px; line-height:1.35;
+  }
+  p{margin:0; color:var(--deep); font-size:clamp(13.5px,1.6vw,15.5px); line-height:1.9; max-width:34em}
+  .actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:clamp(26px,4vw,38px)}
+  .btn{
+    display:inline-flex; align-items:center; gap:9px; padding:13px 22px;
+    font-size:12px; letter-spacing:.14em; text-decoration:none; border-radius:2px;
+    transition:transform .25s ease, background .25s ease;
+  }
+  .btn-primary{background:var(--ink); color:var(--cream)}
+  .btn-primary:hover{background:#1B1B22; transform:translateY(-2px)}
+  .btn-ghost{border:1px solid rgba(10,10,12,.18); color:var(--ink)}
+  .btn-ghost:hover{background:rgba(10,10,12,.05); transform:translateY(-2px)}
+  .foot{
+    margin-top:clamp(36px,6vw,56px); padding-top:16px;
+    border-top:1px solid rgba(10,10,12,.12);
+    font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--deep);
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="num">4<span>0</span>4</p>
+    <div class="rule"></div>
+    <h1>这一帧不存在。</h1>
+    <p>你要找的页面可能被我剪掉了，或者链接拼错了一个字。<br />回到主页，三个镜头还在那里。</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="/">回到第一幕 →</a>
+      <a class="btn btn-ghost" href="mailto:995371353@qq.com">写信给我</a>
+    </div>
+    <div class="foot">杨召 · Yang Zhao</div>
+  </div>
+</body>
+</html>
