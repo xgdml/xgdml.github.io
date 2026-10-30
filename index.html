@@ -135,6 +135,10 @@ body[data-tone="dark"] .eyebrow b{color:var(--gold-bright)}
   font-family:"Noto Sans SC",var(--font-sans);font-weight:900;
   font-size:clamp(3.2rem,min(14vw,12vh),10rem);
   letter-spacing:-.02em}
+/* 3D 未就绪时的平面降级：保证任何情况下首屏都有名字 */
+.name-fallback{display:block;line-height:1;color:var(--ink);
+  text-shadow:2px 2px 0 rgba(233,178,60,.92),-1px 4px 0 rgba(233,178,60,.5)}
+.name-slot.has-depth .name-fallback{display:none}
 .name-en{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.22em;
   font-size:clamp(.78rem,1.7vw,1.15rem);color:var(--deep);margin:clamp(6px,1vw,12px) 0 0}
 .s1-glass{max-width:520px;margin-top:0}
@@ -350,7 +354,7 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
 
   <!-- ============ 01 欢迎 ============ -->
   <section class="scene s1 is-active is-settled" id="s1" aria-label="第一幕 · 欢迎">
-    <video id="v1" src="video1.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+    <video id="v1" src="video1.mp4" poster="v1-poster.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
     <div class="body-layer">
       <div class="s1-top">
         <p class="eyebrow reveal">第一幕 · <b>Hello</b></p>
@@ -358,6 +362,7 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
       <div class="s1-main">
         <h1 class="name-slot reveal">
           <span class="sr-only">杨召</span>
+          <span class="name-fallback" aria-hidden="true">杨召</span>
           <span id="depthName" aria-hidden="true"></span>
         </h1>
         <p class="name-en reveal">Yang Zhao</p>
@@ -549,10 +554,11 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
 
 <div class="film" aria-hidden="true"><i id="filmBar"></i></div>
 
-<script src="vendor/ogl.global.js"></script>
-<script src="depth-text.js"></script>
-<script src="carousel.js"></script>
+<script src="vendor/ogl.global.js" defer></script>
+<script src="depth-text.js" defer></script>
+<script src="carousel.js" defer></script>
 <script>
+document.addEventListener("DOMContentLoaded", function () {
 (function () {
   "use strict";
 
@@ -888,7 +894,7 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
   /* ================= 姓名：3D 挤出文字 ================= */
   var depthNameEl = document.getElementById("depthName");
   if (depthNameEl && window.createDepthText) {
-    window.createDepthText(depthNameEl, {
+    var depthInst = window.createDepthText(depthNameEl, {
       text: "杨召",
       layers: 40,               // 挤出层数：越多侧壁越细腻
       depthRatio: 0.6,          // 总厚度 = 字号 × 0.6（跟着字号缩放，小屏不会过厚）
@@ -913,6 +919,7 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
       outline: false,
       intro: true
     });
+    if (depthInst) depthNameEl.parentNode.classList.add("has-depth");
   }
 
   var p = videos[0].play();
@@ -929,6 +936,7 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
     });
   }, 2400);
 })();
+});
 </script>
 </body>
 </html>
