@@ -35,6 +35,10 @@
 <link rel="stylesheet" href="carousel.css" />
 <link rel="stylesheet" href="elastic-mesh.css" />
 <style>
+/* 本地 Anton：Google Fonts 在国内经常拉不到，字体一退化姓名就变细，直接内嵌保证粗细稳定 */
+@font-face{font-family:"Anton";src:url("vendor/anton-latin.woff2") format("woff2");
+  font-weight:400;font-style:normal;font-display:swap}
+
 /* 读屏专用：项目里此前缺这条定义，辅助文案会被当普通文字渲染 */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
   overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0}
@@ -910,16 +914,17 @@ document.addEventListener("DOMContentLoaded", function () {
     var meshInst = window.createElasticMesh(nameMeshEl, {
       text: "YANG ZHAO",
       fontFamily: "Anton, system-ui, sans-serif",
-      fontWeight: 400,          // Anton 本身就是超粗压缩体，再加粗会糊
-      color: "#E0AE45",         // 亮一档的金：铬面反射后才是金属，而不是土黄
-      material: "chrome",       // 镜面铬：反射工作室环境光，和暖色皮沙发呼应
+      fontWeight: 400,          // Anton 本身就是超粗压缩体
+      bold: 0.05,               // 再向外描一圈，把字撑厚一档
+      color: "#0A0A0C",         // 和全站墨色一致：中性黑在暖棕色背景上更稳，金色会跟皮沙发糊在一起
+      material: "chrome",       // 镜面铬：反射工作室环境光，弱冷调压住画面的暖
       inflate: 1,               // 1 = 圆管状鼓起
       stiffness: 0.5,           // 软硬折中：戳下去有回弹，不会晃个不停
       wobble: 0.6,              // 松手后余震时长
       grabRadius: 70,           // 抓取半径（像素）
       stretch: 0.5,             // 可拉伸距离
       press: 0.5,               // 下压凹陷深度
-      shadow: 0.62,
+      shadow: 0.45,   // 投影收一点，黑字不需要太重的地面阴影
       intro: true,              // 逐字母鼓起入场
       theme: "light"            // 浅色页面：用亮棚的光照配置
     });

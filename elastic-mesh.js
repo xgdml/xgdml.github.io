@@ -485,6 +485,8 @@
       src: String(o.src || ""),
       fontFamily: String(o.fontFamily || "system-ui, sans-serif"),
       fontWeight: o.fontWeight || 900,
+      /* 加粗：按字号的比例向外描边，等于把字“撑胖”（0.05 ≈ 加粗一档） */
+      bold: clamp(o.bold != null ? o.bold : 0, 0, 0.16),
       color: String(o.color || "#3b5bff"),
       imageColors: o.imageColors !== false,
       material: MATERIALS[o.material] != null ? MATERIALS[o.material] : 0,
@@ -767,9 +769,18 @@
         var lineHeight = 100 * 1.02;
         var blockHeight = ascent + descent + lineHeight * (lines.length - 1);
         // 原版留边偏大（0.8 / 0.7），这里放宽到 0.82，让标题在版面里更有分量
-        var size = Math.min((fw * 0.82) / widest, (fh * 0.82) / blockHeight) * 100;
+        // 加粗会向外扩一圈，所以按 bold 比例回收一点边距，避免顶到画布边缘被切
+        var fill = 0.82 - settings.bold;
+        var size = Math.min((fw * fill) / widest, (fh * fill) / blockHeight) * 100;
         ctx.font = settings.fontWeight + " " + size + "px " + settings.fontFamily;
         ctx.fillStyle = "#ffffff";
+        var strokeW = size * settings.bold;
+        if (strokeW > 0) {
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = strokeW;
+          ctx.lineJoin = "round";
+          ctx.miterLimit = 2;
+        }
         ctx.textAlign = "center";
         ctx.textBaseline = "alphabetic";
         var k = size / 100;
@@ -777,7 +788,9 @@
         for (li = 0; li < lines.length; li++) {
           var mm = ctx.measureText(lines[li] || " ");
           var shift = (mm.actualBoundingBoxLeft - mm.actualBoundingBoxRight) / 2;
-          ctx.fillText(lines[li], fw / 2 + shift, top + li * lineHeight * k);
+          var ly = top + li * lineHeight * k;
+          if (strokeW > 0) ctx.strokeText(lines[li], fw / 2 + shift, ly);
+          ctx.fillText(lines[li], fw / 2 + shift, ly);
         }
         finish();
         return true;
