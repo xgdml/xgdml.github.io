@@ -64,8 +64,8 @@
   };
 
   /* 向右展开：药丸像从抽屉里抽出来，纵向叠放、整体向右错落 */
-  var layoutRight = function (list, width, height, tilt, sizes) {
-    var gap = 12;
+  var layoutRight = function (list, width, height, tilt, sizes, gap) {
+    gap = gap || 10;
     var total = 0;
     sizes.forEach(function (sz) { total += sz.h + gap; });
     total -= gap;
@@ -206,7 +206,7 @@
         return { w: el.offsetWidth, h: el.offsetHeight };
       });
       pos = direction === "right"
-        ? layoutRight(items, width, height, tilt, sizes)
+        ? layoutRight(items, width, height, tilt, sizes, o.gap)
         : layout(items, spread, lift, tilt, sizes);
       writePose();
     }

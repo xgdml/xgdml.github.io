@@ -226,11 +226,15 @@ body[data-tone="dark"] .btn-ghost:hover{background:rgba(12,12,16,.62)}
 @media (hover:none),(max-width:899px){.hint-desk{display:none}.hint-touch{display:inline}}
 
 /* 作品分类的"抽屉"文件夹：唯一的分类入口 */
-.folder-slot{position:relative;flex:none;z-index:6}
-body.works-open .folder-slot{opacity:0;visibility:hidden;pointer-events:none}
-.folder-slot{transition:opacity .4s var(--ease),visibility .4s}
-@keyframes folder-hint{0%,100%{transform:translateY(0)}45%{transform:translateY(-6px)}}
-.s3.is-settled .folder-slot{animation:folder-hint 2.4s var(--ease) 1.6s 3}
+.folder-slot{position:relative;flex:none;z-index:6;
+  opacity:0;transform:translateX(-52px);
+  transition:opacity .55s var(--ease),transform 1.05s var(--ease),visibility .4s}
+/* 视频停住、场景落定之后，抽屉从左侧滑进来 */
+.s3.is-settled .folder-slot{opacity:1;transform:none}
+body.works-open .s3 .folder-slot{opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-24px)}
+/* 用独立的 translate 属性做提示浮动，不跟滑入的 transform 抢 */
+@keyframes folder-hint{0%,100%{translate:0 0}45%{translate:0 -7px}}
+.s3.is-settled .folder-slot{animation:folder-hint 2.6s var(--ease) 1.9s 3}
 .folder-slot[data-open]{animation:none}
 
 @media (max-width:899px){
@@ -906,16 +910,17 @@ document.addEventListener("DOMContentLoaded", function () {
       trigger: "hover",
       direction: narrowFolder ? "up" : "right",
       spread: narrowFolder ? 166 : 130,
-      lift: 24,
-      width: narrowFolder ? 170 : 244,
-      height: narrowFolder ? 120 : 184,
-      radius: narrowFolder ? 14 : 17,
-      fontSize: narrowFolder ? 12.5 : 14,
+      lift: 26,
+      gap: narrowFolder ? 14 : 10,
+      width: narrowFolder ? 180 : 262,
+      height: narrowFolder ? 136 : 232,
+      radius: narrowFolder ? 15 : 18,
+      fontSize: narrowFolder ? 13.5 : 16,
       folderColor: "#17161A",
       frontColor: "#2B2A33",
       paperColor: "#F5F1E8",
-      itemColor: "#FFFDF8",
-      itemTextColor: "#14120F",
+      itemColor: "#2A2932",
+      itemTextColor: "#F5F1E8",
       labelColor: "#F5F1E8",
       physics: true,
       drift: 0.5,
