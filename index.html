@@ -215,15 +215,31 @@ body[data-tone="dark"] .btn-ghost:hover{background:rgba(12,12,16,.62)}
   transition:opacity .5s var(--ease),visibility .5s}
 .works-view.is-on{opacity:1;visibility:visible}
 
-.works-index{display:grid;align-content:end;position:relative}
-/* 作品分类的"抽屉"文件夹：浮在右下空地，hover 展开四张分类卡片 */
-.folder-slot{position:absolute;right:calc(var(--pad) * 1.15);bottom:clamp(104px,14vh,148px);z-index:6}
+.works-index{display:flex;align-items:center;justify-content:space-between;
+  gap:clamp(20px,4vw,64px)}
+.works-lead{max-width:min(430px,44vw)}
+.we-line{margin:0;font-family:"Noto Sans SC",var(--font-sans);font-weight:700;
+  font-size:clamp(1.02rem,1.7vw,1.46rem);line-height:1.55;color:var(--cream);letter-spacing:.01em}
+.we-hint{display:block;margin-top:10px;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,253,248,.55)}
+.hint-touch{display:none}
+@media (hover:none),(max-width:899px){.hint-desk{display:none}.hint-touch{display:inline}}
+
+/* 作品分类的"抽屉"文件夹：唯一的分类入口 */
+.folder-slot{position:relative;flex:none;margin-right:clamp(0px,4vw,56px);z-index:6}
 body.works-open .folder-slot{opacity:0;visibility:hidden;pointer-events:none}
 .folder-slot{transition:opacity .4s var(--ease),visibility .4s}
 @keyframes folder-hint{0%,100%{transform:translateY(0)}45%{transform:translateY(-6px)}}
 .s3.is-settled .folder-slot{animation:folder-hint 2.4s var(--ease) 1.6s 3}
 .folder-slot[data-open]{animation:none}
-@media (max-width:899px){.folder-slot{display:none}}
+
+@media (max-width:899px){
+  /* 竖屏空间紧：文件夹在上、说明在下，药丸向上飘才不会压到文字 */
+  .works-index{flex-direction:column-reverse;align-items:center;justify-content:center;gap:clamp(18px,3vh,30px)}
+  .works-lead{max-width:none;text-align:center}
+  .folder-slot{margin-right:0}
+  .we-line{font-size:clamp(.95rem,4.2vw,1.1rem)}
+}
 .works-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 @media (min-width:900px){.works-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,1.1vw,14px)}}
 
@@ -455,59 +471,16 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
       </div>
 
       <div class="works" id="works">
-        <!-- 分类入口 -->
+        <!-- 分类入口：一只会打开、会飘的文件夹 -->
         <div class="works-view works-index is-on" data-view="index">
-          <div class="works-grid">
-            <button class="work-card reveal" type="button" data-work="ai" data-name="AI">
-              <span class="wc-num">01</span>
-              <span class="wc-body">
-                <h3>AI</h3>
-                <span class="wc-en">Generative</span>
-                <span class="wc-meta">生成 · 提示词 · 分镜</span>
-              </span>
-              <span class="wc-foot"><span>整理中</span><i></i></span>
-            </button>
-
-            <button class="work-card reveal" type="button" data-work="ps" data-name="PS">
-              <span class="wc-num">02</span>
-              <span class="wc-body">
-                <h3>PS</h3>
-                <span class="wc-en">Retouch</span>
-                <span class="wc-meta">详情页 · Banner · 切片</span>
-              </span>
-              <span class="wc-foot">
-                <span>查看作品</span>
-                <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></i>
-              </span>
-            </button>
-
-            <a class="work-card reveal" href="https://www.douyin.com/user/self?from_tab_name=main"
-               target="_blank" rel="noopener noreferrer" aria-label="剪辑作品，跳到杨召的抖音主页（新窗口打开）">
-              <span class="wc-num">03</span>
-              <span class="wc-body">
-                <h3>剪辑</h3>
-                <span class="wc-en">Editing</span>
-                <span class="wc-meta">短视频 · 节奏 · 字幕</span>
-              </span>
-              <span class="wc-foot">
-                <span>去抖音看</span>
-                <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 16 16 8M9.5 8H16v6.5"/></svg></i>
-              </span>
-            </a>
-
-            <button class="work-card is-featured reveal" type="button" data-work="photo" data-name="摄影">
-              <span class="wc-num">04</span>
-              <span class="wc-body">
-                <h3>摄影</h3>
-                <span class="wc-en">Photography</span>
-                <span class="wc-meta">8 张作品 · 港口 / 城市 / 静物</span>
-              </span>
-              <span class="wc-foot">
-                <span>查看作品</span>
-                <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></i>
-              </span>
-            </button>
+          <div class="works-lead">
+            <p class="we-line">四个抽屉，都收在这只文件夹里。</p>
+            <span class="we-hint">
+              <span class="hint-desk">悬停展开 · 点分类进作品集</span>
+              <span class="hint-touch">点一下打开 · 选分类</span>
+            </span>
           </div>
+          <div class="folder-slot" id="worksFolder"></div>
         </div>
 
         <!-- 摄影详情 -->
@@ -554,9 +527,6 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
           <a href="#s1" data-jump="0">回到第一幕</a>
         </nav>
       </div>
-
-      <!-- 分类抽屉：悬停展开四类作品 -->
-      <div class="folder-slot" id="worksFolder"></div>
     </div>
   </section>
 </main>
@@ -921,6 +891,7 @@ document.addEventListener("DOMContentLoaded", function () {
   /* -------- 作品分类：悬停展开的文件夹（FolderFloat） -------- */
   var folderEl = document.getElementById("worksFolder");
   if (folderEl && window.createFolderFloat) {
+    var narrowFolder = window.innerWidth < 900;
     worksFolderInst = window.createFolderFloat(folderEl, {
       items: [
         { label: "摄影 · 8 张", value: "photo" },
@@ -929,12 +900,12 @@ document.addEventListener("DOMContentLoaded", function () {
         { label: "AI · 生成实验", value: "ai" }
       ],
       label: "四个抽屉",
-      sublabel: "悬停展开 · 04 分类",
+      sublabel: narrowFolder ? "04 个分类" : "悬停展开 · 04 分类",
       trigger: "hover",
-      spread: 158,
+      spread: narrowFolder ? 166 : 158,
       lift: 24,
-      width: 196,
-      height: 138,
+      width: narrowFolder ? 170 : 196,
+      height: narrowFolder ? 120 : 138,
       radius: 14,
       folderColor: "#17161A",
       frontColor: "#2B2A33",
