@@ -34,6 +34,7 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" /></noscript>
 <link rel="stylesheet" href="carousel.css" />
 <link rel="stylesheet" href="depth-text.css" />
+<link rel="stylesheet" href="folder-float.css" />
 <style>
 /* 本地 Anton：Google Fonts 在国内经常拉不到，字体一退化姓名就变细，直接内嵌保证粗细稳定 */
 @font-face{font-family:"Anton";src:url("vendor/anton-latin.woff2") format("woff2");
@@ -214,7 +215,15 @@ body[data-tone="dark"] .btn-ghost:hover{background:rgba(12,12,16,.62)}
   transition:opacity .5s var(--ease),visibility .5s}
 .works-view.is-on{opacity:1;visibility:visible}
 
-.works-index{display:grid;align-content:end}
+.works-index{display:grid;align-content:end;position:relative}
+/* 作品分类的"抽屉"文件夹：浮在右下空地，hover 展开四张分类卡片 */
+.folder-slot{position:absolute;right:calc(var(--pad) * 1.15);bottom:clamp(104px,14vh,148px);z-index:6}
+body.works-open .folder-slot{opacity:0;visibility:hidden;pointer-events:none}
+.folder-slot{transition:opacity .4s var(--ease),visibility .4s}
+@keyframes folder-hint{0%,100%{transform:translateY(0)}45%{transform:translateY(-6px)}}
+.s3.is-settled .folder-slot{animation:folder-hint 2.4s var(--ease) 1.6s 3}
+.folder-slot[data-open]{animation:none}
+@media (max-width:899px){.folder-slot{display:none}}
 .works-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 @media (min-width:900px){.works-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,1.1vw,14px)}}
 
@@ -545,6 +554,9 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
           <a href="#s1" data-jump="0">回到第一幕</a>
         </nav>
       </div>
+
+      <!-- 分类抽屉：悬停展开四类作品 -->
+      <div class="folder-slot" id="worksFolder"></div>
     </div>
   </section>
 </main>
@@ -570,6 +582,9 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
 <div class="film" aria-hidden="true"><i id="filmBar"></i></div>
 
 <script src="depth-text.js" defer></script>
+<script src="vendor/ogl.global.js" defer></script>
+<script src="vendor/matter.min.js" defer></script>
+<script src="folder-float.js" defer></script>
 <script src="carousel.js" defer></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -785,6 +800,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var worksBack = document.querySelector("[data-works-back]");
   var soonTitle = document.getElementById("soonTitle");
   var worksOpen = false;
+  var worksFolderInst = null;   // 分类文件夹实例，进详情时收起来
 
   function showWorksView(name) {
     worksViews.forEach(function (v) {
@@ -864,6 +880,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function openGallery(kind) {
     var g = galleries[kind];
     showWorksView(kind);
+    if (worksFolderInst) worksFolderInst.close();
     if (!g || g.built || !window.createFlexCarousel) return;
     var mount = document.getElementById(g.mount);
     if (!mount) return;
@@ -898,6 +915,48 @@ document.addEventListener("DOMContentLoaded", function () {
     worksBack.addEventListener("click", function (e) {
       e.stopPropagation();
       showWorksView("index");
+    });
+  }
+
+  /* -------- 作品分类：悬停展开的文件夹（FolderFloat） -------- */
+  var folderEl = document.getElementById("worksFolder");
+  if (folderEl && window.createFolderFloat) {
+    worksFolderInst = window.createFolderFloat(folderEl, {
+      items: [
+        { label: "摄影 · 8 张", value: "photo" },
+        { label: "PS · 详情页 / Banner", value: "ps" },
+        { label: "剪辑 · 短视频", value: "clip" },
+        { label: "AI · 生成实验", value: "ai" }
+      ],
+      label: "四个抽屉",
+      sublabel: "悬停展开 · 04 分类",
+      trigger: "hover",
+      spread: 158,
+      lift: 24,
+      width: 196,
+      height: 138,
+      radius: 14,
+      folderColor: "#17161A",
+      frontColor: "#2B2A33",
+      paperColor: "#F5F1E8",
+      itemColor: "#FFFDF8",
+      itemTextColor: "#14120F",
+      labelColor: "#F5F1E8",
+      physics: true,
+      drift: 0.5,
+      onSelect: function (value) {
+        if (value === "clip") {
+          window.open("https://www.douyin.com/user/self?from_tab_name=main", "_blank", "noopener");
+          return;
+        }
+        if (galleries[value]) { openGallery(value); return; }
+        if (soonTitle) soonTitle.textContent = "AI";
+        showWorksView("soon");
+      }
+    });
+    /* 文件夹长在舞台里：别让它的点击冒泡成翻幕 */
+    ["pointerdown", "pointerup", "click", "touchstart", "touchend", "wheel"].forEach(function (type) {
+      folderEl.addEventListener(type, function (e) { e.stopPropagation(); }, { passive: true });
     });
   }
 

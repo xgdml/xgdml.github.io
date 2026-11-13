@@ -85,8 +85,10 @@
     var baseRotation = { x: restX, y: restY };
 
     /* ---------- 结构 ---------- */
-    root.className = "depth-text" + (outline ? " depth-text--outline" : "") +
-      (o.className ? " " + o.className : "");
+    /* 保留容器自带的 class（.name-depth 的边距靠它），再挂组件类名 */
+    var keepClass = root.className && root.className !== "depth-text" ? " " + root.className.trim() : "";
+    root.className = ("depth-text" + (outline ? " depth-text--outline" : "") +
+      keepClass + (o.className ? " " + o.className : "")).trim();
     root.style.setProperty("--depth-text-perspective", perspective + "px");
     root.style.setProperty("--depth-text-font-size", fontSize);
     root.style.setProperty("--depth-text-font-weight", fontWeight);
