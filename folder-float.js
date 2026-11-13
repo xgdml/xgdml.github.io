@@ -78,7 +78,7 @@
       var h = sizes[i].h;
       /* 左边缘贴着文件夹右侧排开，越往后越向右探出，像抽屉被拉开一叠 */
       pos[i] = {
-        x: width / 2 + 30 + sizes[i].w / 2 + i * 7 + (j - 0.5) * 8,
+        x: width / 2 + 58 + sizes[i].w / 2 + i * 7 + (j - 0.5) * 8,
         y: cursor,
         r: tilt * 0.55 * (j * 2 - 1)
       };
