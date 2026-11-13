@@ -63,6 +63,30 @@
     return pos;
   };
 
+  /* 向右展开：药丸像从抽屉里抽出来，纵向叠放、整体向右错落 */
+  var layoutRight = function (list, width, height, tilt, sizes) {
+    var gap = 12;
+    var total = 0;
+    sizes.forEach(function (sz) { total += sz.h + gap; });
+    total -= gap;
+
+    var top = Math.max(-6, (height - total) / 2);
+    var pos = [];
+    var cursor = top;
+    for (var i = 0; i < list.length; i++) {
+      var j = jitter(i);
+      var h = sizes[i].h;
+      /* 左边缘贴着文件夹右侧排开，越往后越向右探出，像抽屉被拉开一叠 */
+      pos[i] = {
+        x: width / 2 + 22 + sizes[i].w / 2 + i * 7 + (j - 0.5) * 8,
+        y: cursor,
+        r: tilt * 0.55 * (j * 2 - 1)
+      };
+      cursor += h + gap;
+    }
+    return pos;
+  };
+
   function createFolderFloat(root, options) {
     if (!root) return null;
     var o = options || {};
@@ -92,6 +116,7 @@
     var openDuration = o.openDuration != null ? Number(o.openDuration) : 520;
     var stagger = o.stagger != null ? Number(o.stagger) : 45;
     var bounce = o.bounce != null ? Number(o.bounce) : 0.3;
+    var direction = o.direction === "right" ? "right" : "up";
 
     var n = items.length;
     var sub = sublabel || n + (n === 1 ? " note" : " notes");
@@ -123,6 +148,8 @@
     root.style.setProperty("--ff-n", n);
     root.style.setProperty("--ff-spring", "cubic-bezier(0.34, " + (1 + bounce * 1.9).toFixed(2) + ", 0.64, 1)");
     root.setAttribute("data-trigger", trigger);
+    root.setAttribute("data-direction", direction);
+    if (o.fontSize) root.style.fontSize = Number(o.fontSize) + "px";
     if (!physics) root.setAttribute("data-physics", "");
 
     var anchor = document.createElement("div");
@@ -178,7 +205,9 @@
       sizes = pills.map(function (el) {
         return { w: el.offsetWidth, h: el.offsetHeight };
       });
-      pos = layout(items, spread, lift, tilt, sizes);
+      pos = direction === "right"
+        ? layoutRight(items, width, height, tilt, sizes)
+        : layout(items, spread, lift, tilt, sizes);
       writePose();
     }
 
@@ -267,12 +296,29 @@
 
       var ys = pos.map(function (p) { return p.y; });
       var maxH = Math.max.apply(null, world.sizes.map(function (s) { return s.h; }));
-      var zone = {
-        left: -spread - ZONE_PAD,
-        right: spread + ZONE_PAD,
-        top: Math.min.apply(null, ys) - ZONE_PAD,
-        bottom: -lift + maxH
-      };
+      var zone;
+      if (direction === "right") {
+        /* 右向：活动范围是文件夹右侧那块，左边留一道墙挡住，别让药丸飘回去压住文件夹 */
+        var maxX = 0;
+        var bottomMost = 0;
+        pos.forEach(function (p, i) {
+          maxX = Math.max(maxX, p.x + world.sizes[i].w / 2);
+          bottomMost = Math.max(bottomMost, p.y + world.sizes[i].h);
+        });
+        zone = {
+          left: width / 2 + 10,
+          right: maxX + spread * 0.4 + 24,
+          top: Math.min.apply(null, ys) - ZONE_PAD,
+          bottom: bottomMost + ZONE_PAD
+        };
+      } else {
+        zone = {
+          left: -spread - ZONE_PAD,
+          right: spread + ZONE_PAD,
+          top: Math.min.apply(null, ys) - ZONE_PAD,
+          bottom: -lift + maxH
+        };
+      }
       world.zone = zone;
 
       world.bodies = els.map(function (el, i) {

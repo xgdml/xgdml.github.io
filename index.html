@@ -216,17 +216,17 @@ body[data-tone="dark"] .btn-ghost:hover{background:rgba(12,12,16,.62)}
 .works-view.is-on{opacity:1;visibility:visible}
 
 .works-index{display:flex;align-items:center;justify-content:space-between;
-  gap:clamp(20px,4vw,64px)}
-.works-lead{max-width:min(430px,44vw)}
+  gap:clamp(24px,4vw,64px)}
+.works-lead{max-width:min(460px,46vw)}
 .we-line{margin:0;font-family:"Noto Sans SC",var(--font-sans);font-weight:700;
   font-size:clamp(1.02rem,1.7vw,1.46rem);line-height:1.55;color:var(--cream);letter-spacing:.01em}
-.we-hint{display:block;margin-top:10px;font-size:10.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:rgba(255,253,248,.55)}
+.we-hint{display:block;margin-top:10px;font-size:11px;letter-spacing:.12em;
+  color:rgba(255,253,248,.62)}
 .hint-touch{display:none}
 @media (hover:none),(max-width:899px){.hint-desk{display:none}.hint-touch{display:inline}}
 
 /* 作品分类的"抽屉"文件夹：唯一的分类入口 */
-.folder-slot{position:relative;flex:none;margin-right:clamp(0px,4vw,56px);z-index:6}
+.folder-slot{position:relative;flex:none;z-index:6}
 body.works-open .folder-slot{opacity:0;visibility:hidden;pointer-events:none}
 .folder-slot{transition:opacity .4s var(--ease),visibility .4s}
 @keyframes folder-hint{0%,100%{transform:translateY(0)}45%{transform:translateY(-6px)}}
@@ -235,7 +235,7 @@ body.works-open .folder-slot{opacity:0;visibility:hidden;pointer-events:none}
 
 @media (max-width:899px){
   /* 竖屏空间紧：文件夹在上、说明在下，药丸向上飘才不会压到文字 */
-  .works-index{flex-direction:column-reverse;align-items:center;justify-content:center;gap:clamp(18px,3vh,30px)}
+  .works-index{flex-direction:column;align-items:center;justify-content:center;gap:clamp(18px,3vh,30px)}
   .works-lead{max-width:none;text-align:center}
   .folder-slot{margin-right:0}
   .we-line{font-size:clamp(.95rem,4.2vw,1.1rem)}
@@ -473,6 +473,7 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
       <div class="works" id="works">
         <!-- 分类入口：一只会打开、会飘的文件夹 -->
         <div class="works-view works-index is-on" data-view="index">
+          <div class="folder-slot" id="worksFolder"></div>
           <div class="works-lead">
             <p class="we-line">四个抽屉，都收在这只文件夹里。</p>
             <span class="we-hint">
@@ -480,7 +481,6 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
               <span class="hint-touch">点一下打开 · 选分类</span>
             </span>
           </div>
-          <div class="folder-slot" id="worksFolder"></div>
         </div>
 
         <!-- 摄影详情 -->
@@ -904,11 +904,13 @@ document.addEventListener("DOMContentLoaded", function () {
       label: "四个抽屉",
       sublabel: narrowFolder ? "04 个分类" : "悬停展开 · 04 分类",
       trigger: "hover",
-      spread: narrowFolder ? 166 : 158,
+      direction: narrowFolder ? "up" : "right",
+      spread: narrowFolder ? 166 : 130,
       lift: 24,
-      width: narrowFolder ? 170 : 196,
-      height: narrowFolder ? 120 : 138,
-      radius: 14,
+      width: narrowFolder ? 170 : 244,
+      height: narrowFolder ? 120 : 184,
+      radius: narrowFolder ? 14 : 17,
+      fontSize: narrowFolder ? 12.5 : 14,
       folderColor: "#17161A",
       frontColor: "#2B2A33",
       paperColor: "#F5F1E8",

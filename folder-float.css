@@ -107,14 +107,14 @@
 }
 
 .folder-float__label {
-  font-size: 13px;
+  font-size: 1.12em;
   font-weight: 500;
   letter-spacing: .01em;
 }
 
 .folder-float__sub {
-  font-size: 11px;
-  opacity: .55;
+  font-size: .8em;
+  opacity: .58;
 }
 
 .folder-float__trigger {
@@ -165,15 +165,23 @@
   height: calc(var(--ff-lift) + 120px);
 }
 
+/* 向右展开：热区改到文件夹右侧 */
+.folder-float[data-direction="right"][data-open] .folder-float__items::before {
+  top: -8px;
+  left: 0;
+  width: calc(var(--ff-w) * .5 + var(--ff-spread) + 260px);
+  height: calc(var(--ff-h) + 16px);
+}
+
 .folder-float__item {
   position: absolute;
   top: 0;
   left: 50%;
   margin: 0;
-  padding: 0 14px;
-  height: 34px;
+  padding: 0 1em;
+  height: 2.6em;
   border: 0;
-  border-radius: 17px;
+  border-radius: 1.3em;
   background: var(--ff-item);
   color: var(--ff-item-ink);
   font: inherit;
