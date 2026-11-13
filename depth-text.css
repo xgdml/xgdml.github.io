@@ -24,7 +24,7 @@
   font-size:var(--depth-text-font-size,7rem);
   font-weight:var(--depth-text-font-weight,900);
   line-height:.86;
-  letter-spacing:var(--depth-text-track,.86em);
+  letter-spacing:var(--depth-text-track,-.065em);
   white-space:nowrap;
   user-select:none;
   -webkit-user-select:none;

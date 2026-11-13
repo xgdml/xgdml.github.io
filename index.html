@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" media="print" onload="this.media='all'" />
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" /></noscript>
 <link rel="stylesheet" href="carousel.css" />
-<link rel="stylesheet" href="elastic-mesh.css" />
+<link rel="stylesheet" href="depth-text.css" />
 <style>
 /* 本地 Anton：Google Fonts 在国内经常拉不到，字体一退化姓名就变细，直接内嵌保证粗细稳定 */
 @font-face{font-family:"Anton";src:url("vendor/anton-latin.woff2") format("woff2");
@@ -142,14 +142,15 @@ body[data-tone="dark"] .eyebrow b{color:var(--gold-bright)}
 .name-slot{margin:clamp(8px,1.4vw,16px) 0 0;line-height:1;
   font-family:var(--font-display);font-weight:400;
   font-size:clamp(2.6rem,6.4vw,5.6rem);letter-spacing:.01em}
-/* 扁平降级：WebGL 未就绪或不可用时，先用静态字占住版面 */
+/* 3D 挤出字容器：字号由组件用 --depth-text-font-size 接管，这里只定版位 */
+.name-depth{display:block;line-height:1;margin-top:clamp(2px,.4vw,6px);
+  /* 3D 透视让字形整体向左探出，补一点左边距，和 eyebrow / 卡片对齐 */
+  margin-left:clamp(10px,2.4vw,34px);
+  user-select:none;-webkit-user-select:none}
+/* 降级：JS 没跑起来时用平面大字占住版面 */
 .name-fallback{display:block;line-height:1;color:var(--ink);
   text-shadow:2px 2px 0 rgba(200,145,47,.9),-1px 4px 0 rgba(200,145,47,.45)}
-.name-slot.has-mesh .name-fallback{display:none}
-.name-mesh{display:block;position:relative;overflow:hidden;
-  width:100%;height:clamp(140px,22vh,232px);margin-top:clamp(0px,.3vw,4px);
-  touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab}
-.name-mesh:active{cursor:grabbing}
+.name-slot.has-depth .name-fallback{display:none}
 .s1-glass{max-width:520px;margin-top:0}
 .s1-desc{margin:0;font-size:clamp(12.8px,1.2vw,15px);line-height:1.9;color:#35312A}
 .s1-desc strong{color:var(--ink);font-weight:600}
@@ -311,7 +312,7 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
   .body-layer{padding:calc(var(--pad) + 54px + env(safe-area-inset-top,0px)) calc(var(--pad) + env(safe-area-inset-right,0px)) calc(var(--pad) + 46px + env(safe-area-inset-bottom,0px)) calc(var(--pad) + env(safe-area-inset-left,0px))}
   .s1-main{max-width:none}
   .name-slot{font-size:clamp(1.6rem,10.5vw,2.6rem)}
-  .name-mesh{height:clamp(64px,9.5vh,88px)}
+  .name-depth{margin-top:0}
   .s2 .body-layer{justify-content:space-between;gap:12px;padding-bottom:calc(var(--pad) + 52px)}
   .s2-top{justify-content:flex-start}
   /* 竖屏下人物占满画面，小标题会压到墨镜上，给个胶囊底保证读得出 */
@@ -378,7 +379,7 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
         <h1 class="name-slot reveal">
           <span class="sr-only">杨召 · YANG ZHAO</span>
           <span class="name-fallback" aria-hidden="true">YANG ZHAO</span>
-          <span class="name-mesh" id="nameMesh" aria-hidden="true"></span>
+          <span class="name-depth" id="nameDepth" aria-hidden="true"></span>
         </h1>
       </div>
       <div class="glass s1-glass reveal">
@@ -568,8 +569,7 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
 
 <div class="film" aria-hidden="true"><i id="filmBar"></i></div>
 
-<script src="vendor/ogl.global.js" defer></script>
-<script src="elastic-mesh.js" defer></script>
+<script src="depth-text.js" defer></script>
 <script src="carousel.js" defer></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -703,11 +703,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /* -------- 交互 -------- */
   var stage = document.getElementById("stage");
-  var namePressed = false;   // 本次按下起始于弹性字，松手后短暂保留以吞掉 click
 
   stage.addEventListener("click", function (e) {
-    /* .name-mesh 是可拖拽的弹性字：按下、拖拽、戳它都不翻幕 */
-    if (namePressed || e.target.closest("a,button,.name-mesh")) return;
+    if (e.target.closest("a,button")) return;
     if (current === 2 && worksOpen) return;   // 作品详情打开时，点空白不跳幕
     next();
   });
@@ -908,41 +906,34 @@ document.addEventListener("DOMContentLoaded", function () {
     worksEl.addEventListener(type, function (e) { e.stopPropagation(); }, { passive: true });
   });
 
-  /* ================= 姓名：弹性材质文字 ================= */
-  var nameMeshEl = document.getElementById("nameMesh");
-  if (nameMeshEl && window.createElasticMesh) {
-    var meshInst = window.createElasticMesh(nameMeshEl, {
+  /* ================= 姓名：3D 挤出字 DepthText ================= */
+  var nameDepthEl = document.getElementById("nameDepth");
+  if (nameDepthEl && window.createDepthText) {
+    /* 字号分两档：竖屏靠 vw 撑满，桌面靠 rem 封顶 */
+    var depthFontSize = window.innerWidth < 860
+      ? "clamp(2.7rem, 19.5vw, 5.2rem)"
+      : "clamp(3.4rem, 11vw, 10rem)";
+    window.createDepthText(nameDepthEl, {
       text: "YANG ZHAO",
+      layers: 34,
+      depthRatio: 0.2,         // 厚度按字号等比缩放，小屏不会变成"厚砖"
+      faceColor: "#0A0A0C",    // 正面：全站墨色
+      depthColor: "#8A6A2E",   // 侧面：暗金，和页面金色点缀同一支
+      tilt: 7.5,
+      restX: -13,              // 加大静止倾角，让侧壁露出来，厚度看得见
+      restY: 17,
+      pointerTracking: false,  // 关掉鼠标左右跟随
+      autoOrbit: false,        // 也不自动环绕，字定住不动
+      hoverPush: 0.4,          // 只保留悬停轻轻压进去的反馈
+      float: false,
+      fontSize: depthFontSize,
+      fontWeight: 400,
       fontFamily: "Anton, system-ui, sans-serif",
-      fontWeight: 400,          // Anton 本身就是超粗压缩体
-      bold: 0.05,               // 再向外描一圈，把字撑厚一档
-      color: "#0A0A0C",         // 和全站墨色一致：中性黑在暖棕色背景上更稳，金色会跟皮沙发糊在一起
-      material: "chrome",       // 镜面铬：反射工作室环境光，弱冷调压住画面的暖
-      inflate: 1,               // 1 = 圆管状鼓起
-      stiffness: 0.5,           // 软硬折中：戳下去有回弹，不会晃个不停
-      wobble: 0.6,              // 松手后余震时长
-      grabRadius: 70,           // 抓取半径（像素）
-      stretch: 0.5,             // 可拉伸距离
-      press: 0.5,               // 下压凹陷深度
-      shadow: 0.45,   // 投影收一点，黑字不需要太重的地面阴影
-      intro: true,              // 逐字母鼓起入场
-      theme: "light"            // 浅色页面：用亮棚的光照配置
+      letterSpacing: "-0.05em",
+      shadow: true,
+      intro: true
     });
-    if (meshInst) {
-      nameMeshEl.parentNode.classList.add("has-mesh");
-      /* 拖拽弹性字时不要顺带翻到下一幕 */
-      ["pointerdown", "pointerup", "touchstart", "touchend"].forEach(function (type) {
-        nameMeshEl.addEventListener(type, function (e) { e.stopPropagation(); }, { passive: true });
-      });
-      nameMeshEl.addEventListener("pointerdown", function () { namePressed = true; });
-      nameMeshEl.addEventListener("touchstart", function () { namePressed = true; }, { passive: true });
-      /* 指针可能被拖出容器，所以在 window 上收尾，并延迟清标志让 click 先被吞掉 */
-      ["pointerup", "pointercancel", "touchend", "touchcancel"].forEach(function (type) {
-        window.addEventListener(type, function () {
-          setTimeout(function () { namePressed = false; }, 120);
-        }, { passive: true });
-      });
-    }
+    nameDepthEl.parentNode.classList.add("has-depth");
   }
 
   var p = videos[0].play();
