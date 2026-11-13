@@ -777,6 +777,8 @@ document.addEventListener("DOMContentLoaded", function () {
       v.classList.toggle("is-on", v.getAttribute("data-view") === name);
     });
     worksOpen = name !== "index";
+    /* 进任何详情视图都把文件夹收起来，避免物理继续在后台跑 */
+    if (worksOpen && worksFolderInst) worksFolderInst.close();
     if (worksBack) worksBack.hidden = !worksOpen;
     document.body.classList.toggle("works-open", worksOpen);
   }
