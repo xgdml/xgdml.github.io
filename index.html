@@ -202,7 +202,7 @@ body[data-tone="dark"] .btn-ghost:hover{background:rgba(12,12,16,.62)}
 .facts dd{margin:3px 0 0;font-size:12.4px;font-weight:500;line-height:1.5;color:var(--ink)}
 
 /* ---------- 场景三：作品展示 ---------- */
-.s3 .body-layer{grid-template-rows:auto 1fr auto;padding-bottom:calc(var(--pad) + 2px)}
+.s3 .body-layer{grid-template-rows:auto 1fr}
 .s3-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
 .s3-h{font-family:"Noto Sans SC",var(--font-sans);font-weight:900;letter-spacing:-.02em;line-height:1.22;
   font-size:clamp(1.3rem,2.5vw,2.05rem);margin:12px 0 0;max-width:18em}
@@ -217,11 +217,18 @@ body[data-tone="dark"] .btn-ghost:hover{background:rgba(12,12,16,.62)}
 
 .works-index{display:flex;align-items:center;justify-content:space-between;
   gap:clamp(24px,4vw,64px)}
-.works-lead{max-width:min(460px,46vw)}
-.we-line{margin:0;font-family:"Noto Sans SC",var(--font-sans);font-weight:700;
-  font-size:clamp(1.02rem,1.7vw,1.46rem);line-height:1.55;color:var(--cream);letter-spacing:.01em}
-.we-hint{display:block;margin-top:10px;font-size:11px;letter-spacing:.12em;
-  color:rgba(255,253,248,.62)}
+/* 右侧说明与左侧标题同一规格，两级文字读起来是一组 */
+.works-lead{max-width:min(520px,48vw);
+  opacity:0;transform:translateX(-52px);
+  transition:opacity .55s var(--ease),transform 1.05s var(--ease)}
+.s3.is-settled .works-lead{opacity:1;transform:none;transition-delay:.14s}
+.we-line{margin:0;font-family:"Noto Sans SC",var(--font-sans);font-weight:900;
+  font-size:clamp(1.3rem,2.5vw,2.05rem);line-height:1.32;color:var(--cream);letter-spacing:-.01em;
+  /* 文字浮在人像上，给一层柔和投影保证任何背景都读得出来 */
+  text-shadow:0 2px 26px rgba(6,6,9,.62),0 1px 3px rgba(6,6,9,.4)}
+.we-hint{display:inline-block;margin-top:12px;padding:7px 13px;border-radius:999px;
+  font-size:11px;letter-spacing:.12em;color:rgba(255,253,248,.85);
+  background:rgba(8,9,13,.4);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .hint-touch{display:none}
 @media (hover:none),(max-width:899px){.hint-desk{display:none}.hint-touch{display:inline}}
 
@@ -239,10 +246,11 @@ body.works-open .s3 .folder-slot{opacity:0;visibility:hidden;pointer-events:none
 
 @media (max-width:899px){
   /* 竖屏空间紧：文件夹在上、说明在下，药丸向上飘才不会压到文字 */
-  .works-index{flex-direction:column;align-items:center;justify-content:center;gap:clamp(18px,3vh,30px)}
+  .works-index{flex-direction:column;align-items:center;justify-content:center;gap:clamp(20px,3.4vh,34px)}
   .works-lead{max-width:none;text-align:center}
   .folder-slot{margin-right:0}
-  .we-line{font-size:clamp(.95rem,4.2vw,1.1rem)}
+  .we-line{font-size:clamp(1.02rem,4.7vw,1.3rem);line-height:1.42}
+  .we-hint{font-size:10.5px}
 }
 .works-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 @media (min-width:900px){.works-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,1.1vw,14px)}}
@@ -291,14 +299,7 @@ body.works-open .s3 .folder-slot{opacity:0;visibility:hidden;pointer-events:none
 .soon-body p{margin:0;font-size:clamp(1rem,1.4vw,1.2rem);font-weight:600;color:rgba(255,253,248,.8)}
 .soon-body span{font-size:11.5px;letter-spacing:.04em;color:rgba(255,253,248,.45)}
 
-.s3-foot{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
-  border-top:1px solid var(--line-cream);padding-top:clamp(14px,2vw,20px)}
-.s3-foot .mail{display:inline-flex;align-items:center;gap:10px;font-size:clamp(12px,1.3vw,14px);letter-spacing:.04em;
   color:var(--cream);transition:color .25s}
-.s3-foot .mail:hover{color:var(--gold-bright)}
-.s3-foot .mail svg{width:16px;height:16px;opacity:.7}
-.s3-foot nav{display:flex;gap:18px;align-items:center;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,253,248,.5)}
-.s3-foot nav a:hover{color:var(--gold-bright)}
 
 /* ================= HUD ================= */
 .hud{position:fixed;inset:0;z-index:60;pointer-events:none}
@@ -373,8 +374,7 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
   .skill li{font-size:9px;padding:2px 7px}
   .skill-row{max-height:none}
   @media (max-width:559px){.skill ul{display:none} .skill p{margin-top:5px}}
-  .s3-foot{padding-top:14px}
-  /* 移动端竖屏取景会把人物顶到 HUD 上，加一层同色顶部渐隐保证顶栏可读 */
+    /* 移动端竖屏取景会把人物顶到 HUD 上，加一层同色顶部渐隐保证顶栏可读 */
   .hud-top::before{content:"";position:absolute;left:-40px;right:-40px;top:-70px;height:200px;
     pointer-events:none;z-index:-1;
     background:linear-gradient(to bottom,rgba(245,241,232,.96) 0%,rgba(245,241,232,.86) 46%,rgba(245,241,232,.42) 74%,rgba(245,241,232,0) 100%)}
@@ -521,16 +521,6 @@ body[data-tone="dark"] .film i{background:var(--gold-bright)}
         </div>
       </div>
 
-      <div class="s3-foot">
-        <a class="mail" href="mailto:995371353@qq.com">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
-          995371353@qq.com
-        </a>
-        <nav aria-label="结尾操作">
-          <a href="tel:+8617637873818">电话</a>
-          <a href="#s1" data-jump="0">回到第一幕</a>
-        </nav>
-      </div>
     </div>
   </section>
 </main>
