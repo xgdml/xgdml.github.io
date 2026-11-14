@@ -294,6 +294,21 @@ body.works-open .s3 .folder-slot{opacity:0;visibility:hidden;pointer-events:none
 @media (min-width:700px){.wd-hint{display:block;text-transform:none;letter-spacing:.06em;opacity:.7}}
 .wd-carousel{position:relative;min-height:0}
 
+/* 作品图还在下载时的提示 */
+.gallery-loading{position:absolute;inset:0;z-index:10;display:grid;place-content:center;justify-items:center;
+  gap:14px;pointer-events:none;transition:opacity .4s var(--ease)}
+.gallery-loading i{display:block;width:24px;height:24px;border-radius:50%;
+  border:1.5px solid rgba(255,253,248,.18);border-top-color:rgba(255,253,248,.72);
+  animation:glspin .9s linear infinite}
+.gallery-loading .gl-text{font-size:11px;letter-spacing:.16em;color:rgba(255,253,248,.55)}
+.gallery-loading.is-done{opacity:0}
+@keyframes glspin{to{transform:rotate(360deg)}}
+
+/* WebGL 兜底：原生图片网格 */
+.gallery-fallback{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+  gap:10px;height:100%;overflow:auto;padding:2px 2px 12px}
+.gallery-fallback img{width:100%;height:clamp(120px,22vh,190px);object-fit:cover;border-radius:8px;display:block}
+
 .works-soon .soon-body{display:grid;place-content:center;justify-items:center;gap:8px;text-align:center;
   border:1px dashed rgba(255,253,248,.18);border-radius:14px}
 .soon-body p{margin:0;font-size:clamp(1rem,1.4vw,1.2rem);font-weight:600;color:rgba(255,253,248,.8)}
@@ -739,24 +754,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /* ================= 作品展示 ================= */
   var PHOTO_ITEMS = [
-    { src: "photos/p1.jpg", title: "远洋", subtitle: "Harbour", alt: "晨雾中的港区码头与远处成排的货轮" },
-    { src: "photos/p2.jpg", title: "环", subtitle: "Loop", alt: "白色环形钢结构天桥，透视指向远处的高楼" },
-    { src: "photos/p3.jpg", title: "红霞", subtitle: "Afterglow", alt: "红霞满天时矗立的信号塔剪影" },
-    { src: "photos/p4.jpg", title: "青市", subtitle: "Cyan Market", alt: "青色玻璃棚下的服装批发市场与摊主" },
-    { src: "photos/p5.jpg", title: "蓝调", subtitle: "Blue Hour", alt: "蓝色光线里的办公室人像，胸前挂着键盘" },
-    { src: "photos/p6.jpg", title: "空椅 · 田野", subtitle: "Field", alt: "田野边堆放的蓝色塑料桌椅" },
-    { src: "photos/p7.jpg", title: "空椅 · 山", subtitle: "Mountain", alt: "远山下整齐排列的蓝色塑料椅" },
-    { src: "photos/p8.jpg", title: "无人", subtitle: "Vacant", alt: "黑白画面中楼梯尽头的一把旧椅子" }
+    { src: "photos/web/p1.jpg", title: "远洋", subtitle: "Harbour", alt: "晨雾中的港区码头与远处成排的货轮" },
+    { src: "photos/web/p2.jpg", title: "环", subtitle: "Loop", alt: "白色环形钢结构天桥，透视指向远处的高楼" },
+    { src: "photos/web/p3.jpg", title: "红霞", subtitle: "Afterglow", alt: "红霞满天时矗立的信号塔剪影" },
+    { src: "photos/web/p4.jpg", title: "青市", subtitle: "Cyan Market", alt: "青色玻璃棚下的服装批发市场与摊主" },
+    { src: "photos/web/p5.jpg", title: "蓝调", subtitle: "Blue Hour", alt: "蓝色光线里的办公室人像，胸前挂着键盘" },
+    { src: "photos/web/p6.jpg", title: "空椅 · 田野", subtitle: "Field", alt: "田野边堆放的蓝色塑料桌椅" },
+    { src: "photos/web/p7.jpg", title: "空椅 · 山", subtitle: "Mountain", alt: "远山下整齐排列的蓝色塑料椅" },
+    { src: "photos/web/p8.jpg", title: "无人", subtitle: "Vacant", alt: "黑白画面中楼梯尽头的一把旧椅子" }
   ];
 
   var PS_ITEMS = [
-    { src: "ps/ps-01.jpg", title: "主视觉", subtitle: "Key Visual", alt: "详情页首屏：运动员手持写着 1:59:30 WR Sub2 的破二跑鞋，下方是 ADIDAS 大字" },
-    { src: "ps/ps-02.jpg", title: "结构分解", subtitle: "Structure", alt: "萨维同款：跑鞋分解为四层结构，下方是跑者类型与适用场景标签" },
-    { src: "ps/ps-03.jpg", title: "中底与鞋面", subtitle: "Midsole", alt: "超临界泡棉模块与薄如蝉翼鞋面特写" },
-    { src: "ps/ps-04.jpg", title: "顶级支撑", subtitle: "Support", alt: "顶级支撑模块：鞋跟与碳板结构特写，红框构图" },
-    { src: "ps/ps-05.jpg", title: "参数与试穿", subtitle: "Product Info", alt: "产品信息参数表与试穿报告实拍，标注标准尺码、正码正拍" },
-    { src: "ps/ps-banner.jpg", title: "破二 Banner", subtitle: "1920 × 900", alt: "伦敦马拉松破二主题 Banner：巨型 adidas 字母与 1:59:30 数字叠印运动员" },
-    { src: "ps/ps-live.jpg", title: "直播切片", subtitle: "Live Cut", alt: "抖音超聚 adidas 直播切片：球鞋建筑与卖点浮窗" }
+    { src: "ps/web/ps-01.jpg", title: "主视觉", subtitle: "Key Visual", alt: "详情页首屏：运动员手持写着 1:59:30 WR Sub2 的破二跑鞋，下方是 ADIDAS 大字" },
+    { src: "ps/web/ps-02.jpg", title: "结构分解", subtitle: "Structure", alt: "萨维同款：跑鞋分解为四层结构，下方是跑者类型与适用场景标签" },
+    { src: "ps/web/ps-03.jpg", title: "中底与鞋面", subtitle: "Midsole", alt: "超临界泡棉模块与薄如蝉翼鞋面特写" },
+    { src: "ps/web/ps-04.jpg", title: "顶级支撑", subtitle: "Support", alt: "顶级支撑模块：鞋跟与碳板结构特写，红框构图" },
+    { src: "ps/web/ps-05.jpg", title: "参数与试穿", subtitle: "Product Info", alt: "产品信息参数表与试穿报告实拍，标注标准尺码、正码正拍" },
+    { src: "ps/web/ps-banner.jpg", title: "破二 Banner", subtitle: "1920 × 900", alt: "伦敦马拉松破二主题 Banner：巨型 adidas 字母与 1:59:30 数字叠印运动员" },
+    { src: "ps/web/ps-live.jpg", title: "直播切片", subtitle: "Live Cut", alt: "抖音超聚 adidas 直播切片：球鞋建筑与卖点浮窗" }
   ];
 
   var worksEl = document.getElementById("works");
@@ -843,25 +858,94 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  /* 图片没下载完之前，先给个"正在载入"的反馈，别让画面只剩一排灰块 */
+  function showGalleryLoader(mount, items) {
+    var box = document.createElement("div");
+    box.className = "gallery-loading";
+    box.innerHTML = '<i></i><span class="gl-text"></span>';
+    var txt = box.querySelector(".gl-text");
+    txt.textContent = "正在载入 0 / " + items.length;
+    mount.appendChild(box);
+
+    var done = 0;
+    var total = items.length;
+    var finished = false;
+    var tick = function () {
+      if (finished) return;
+      txt.textContent = "正在载入 " + done + " / " + total;
+      if (done >= total) {
+        finished = true;
+        box.classList.add("is-done");
+        setTimeout(function () { if (box.parentNode) box.parentNode.removeChild(box); }, 500);
+      }
+    };
+    items.forEach(function (it) {
+      var img = new Image();
+      img.onload = img.onerror = function () { done += 1; tick(); };
+      img.src = it.src;
+    });
+    return box;
+  }
+
+  /* WebGL 不可用 / 纹理读不进来时的兜底：普通图片网格，任何设备都看得到 */
+  function buildGalleryFallback(mount, items) {
+    if (!mount || mount.querySelector(".gallery-fallback")) return;
+    var grid = document.createElement("div");
+    grid.className = "gallery-fallback";
+    items.forEach(function (it, i) {
+      var img = document.createElement("img");
+      img.src = it.src;
+      img.alt = it.alt || it.title || "";
+      if (i > 3) img.loading = "lazy";
+      grid.appendChild(img);
+    });
+    mount.textContent = "";
+    mount.appendChild(grid);
+  }
+
+  /* WebGL 探测：拿到上下文才交给轮播，否则直接图片兜底 */
+  function canUseWebGL() {
+    try {
+      var probe = document.createElement("canvas");
+      return !!(probe.getContext("webgl2") || probe.getContext("webgl"));
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function mountGallery(g, mount, items) {
+    if (!window.OGL || !window.createFlexCarousel || !canUseWebGL()) {
+      buildGalleryFallback(mount, items);
+      return;
+    }
+    showGalleryLoader(mount, items);
+    try {
+      g.built = g.make(mount, items);
+      if (!g.built) buildGalleryFallback(mount, items);
+    } catch (err) {
+      buildGalleryFallback(mount, items);
+    }
+  }
+
   function openGallery(kind) {
     var g = galleries[kind];
     showWorksView(kind);
     if (worksFolderInst) worksFolderInst.close();
-    if (!g || g.built || !window.createFlexCarousel) return;
+    if (!g || g.built) return;
     var mount = document.getElementById(g.mount);
     if (!mount) return;
 
     // file:// 下 WebGL 无法读取本地图片纹理，改用内嵌数据（按需加载）
     if (location.protocol !== "file:") {
-      g.built = g.make(mount, g.items);
+      mountGallery(g, mount, g.items);
       return;
     }
     var ready = cachedItems(g);
-    if (ready) { g.built = g.make(mount, ready); return; }
+    if (ready) { mountGallery(g, mount, ready); return; }
     var tag = document.createElement("script");
     tag.src = g.dataFile;
-    tag.onload = function () { g.built = g.make(mount, cachedItems(g) || g.items); };
-    tag.onerror = function () { g.built = g.make(mount, g.items); };
+    tag.onload = function () { mountGallery(g, mount, cachedItems(g) || g.items); };
+    tag.onerror = function () { mountGallery(g, mount, g.items); };
     document.head.appendChild(tag);
   }
 
